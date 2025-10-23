@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TA.Domain.Model\TA.Domain.Model.csproj" />
+    <ProjectReference Include="..\TA.Persistence.Entities\TA.Persistence.Entities.csproj" />
+    <ProjectReference Include="..\TA.Persistence\TA.Persistence.csproj" />
+    <ProjectReference Include="..\TA_Api_Contracts\TA.Api.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>
