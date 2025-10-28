@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using TA.Api.Contracts.RequestContracts;
 using TA.Api.Contracts.ResponseContracts;
-using TA.Domain.Model;
 using TA.Domain.Services.Interfaces;
 using TA.Domain.Services.MappingExtensions;
 using TA.Persistence.Interfaces;
@@ -22,7 +21,7 @@ namespace TA.Domain.Services
 
         public void DeleteAbonnement(int id)
         {
-            throw new NotImplementedException();
+            abonnementRepository.DeleteAbonnement(id);
         }
 
         public AbonnementResponseContract GetAbonnement(int id)
@@ -32,7 +31,7 @@ namespace TA.Domain.Services
 
         public IEnumerable<AbonnementResponseContract> GetAllAbonnements()
         {
-            throw new NotImplementedException();
+            return abonnementRepository.GetAllAbonnements().Select(abonnement => abonnement.AsModel().AsContract(klantRepository, stationRepository));
         }
 
         //public AbonnementResponseContract UpdateAbonnement(AbonnementRequestContract abonnementRequestContract, int id)

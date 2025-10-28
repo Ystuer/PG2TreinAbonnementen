@@ -23,5 +23,12 @@ namespace TA.Api.Controllers
             if (foundAbonnement is null) return NotFound();
             return Ok(foundAbonnement);
         }
+
+        [HttpGet]
+        public ActionResult<IEnumerable<AbonnementResponseContract>> GetAllAbonnements()
+        {
+            var abonnementen = abonnementService.GetAllAbonnements();
+            return Ok(abonnementen);
+        }
     }
 }
