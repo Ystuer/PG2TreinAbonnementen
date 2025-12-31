@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,38 +12,39 @@ namespace TA.Persistence
 {
     public class StationRepository(TreinabonnementContext _dbContext) : IStationRepository 
     {
-        public Station CreateStation(Station station)
+        public async Task<Station> CreateStation(Station station)
         {
             _dbContext.Stations.Add(station);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
             return station;
         }
 
-        public void DeleteStation(int id)
+        public async Task DeleteStation(int id)
         {
-            var existingStation = _dbContext.Stations.Find(id);
+            var existingStation = await _dbContext.Stations.FindAsync(id);
             if (existingStation == null) { throw new StationNotFoundException(); }
             _dbContext.Stations.Remove(existingStation);
+            await _dbContext.SaveChangesAsync();
         }
 
-        public IEnumerable<Station> GetAllStations()
+        public async Task<IEnumerable<Station>> GetAllStations()
         {
-            return _dbContext.Stations.ToList();
+            return await _dbContext.Stations.ToListAsync();
         }
 
-        public Station GetStation(int id)
+        public async Task<Station> GetStation(int id)
         {
-            return _dbContext.Stations.Find(id) ?? throw new StationNotFoundException(id);
+            return await _dbContext.Stations.FindAsync(id) ?? throw new StationNotFoundException(id);
         }
 
-        public Station UpdateStation(Station station, int id)
+        public async Task<Station> UpdateStation(Station station, int id)
         {
-            var existingStation = _dbContext.Stations.Find(id);
+            var existingStation = await _dbContext.Stations.FindAsync(id);
             if (existingStation == null) { throw new StationNotFoundException(id); }
             
             existingStation.Naam = station.Naam;
             existingStation.VerwarmdeWachtruimte = station.VerwarmdeWachtruimte;
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             return existingStation;
         }

@@ -12,32 +12,32 @@ namespace TA.Api.Controllers
     public class StationController(IStationService stationService) : Controller
     {
         [HttpPost]
-        public ActionResult<StationResponseContract> CreateStation([FromBody] StationRequestContract stationRequestContract)
+        public async Task<ActionResult<StationResponseContract>> CreateStation([FromBody] StationRequestContract stationRequestContract)
         {
-            StationResponseContract newStation = stationService.CreateStation(stationRequestContract);
+            StationResponseContract newStation = await stationService.CreateStation(stationRequestContract);
             return CreatedAtAction(nameof(GetStation), new { newStation.Id }, newStation);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<StationResponseContract> GetStation(int id)
+        public async Task<ActionResult<StationResponseContract>> GetStation(int id)
         {
-            StationResponseContract foundStation = stationService.GetStation(id);
+            StationResponseContract foundStation = await stationService.GetStation(id);
             if (foundStation is null) return NotFound();
             return Ok(foundStation);
         }
 
         [HttpGet]
-        public ActionResult<List<StationResponseContract>> GetAllStations()
+        public async Task<ActionResult<List<StationResponseContract>>> GetAllStations()
         {
-            return Ok(stationService.GetAllStations());
+            return Ok(await stationService.GetAllStations());
         }
 
         [HttpDelete]
-        public IActionResult DeleteStation(int id)
+        public async Task<IActionResult> DeleteStation(int id)
         {
             try
             {
-                stationService.DeleteStation(id);
+                await stationService.DeleteStation(id);
             }
             catch (StationNotFoundException snfe)
             {
@@ -52,9 +52,9 @@ namespace TA.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<StationResponseContract> UpdateStation([FromBody] StationRequestContract stationRequestContract, [FromRoute] int id)
+        public async Task<ActionResult<StationResponseContract>> UpdateStation([FromBody] StationRequestContract stationRequestContract, [FromRoute] int id)
         {
-            var updatedStation = stationService.UpdateStation(stationRequestContract, id);
+            var updatedStation = await stationService.UpdateStation(stationRequestContract, id);
             if (updatedStation is null) return NotFound();
             return Ok(updatedStation);
         }

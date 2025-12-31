@@ -9,10 +9,10 @@ namespace TA.Persistence.Interfaces
 {
     public interface IAbonnementRepository
     {
-        Abonnement CreateAbonnement(Abonnement abonnement);
-        Abonnement GetAbonnement(int id);
-        IEnumerable<Abonnement> GetAllAbonnements();
+        Task<Abonnement> CreateAbonnement(Abonnement abonnement);
+        Task<Abonnement> GetAbonnement(int id);
+        Task<IEnumerable<Abonnement>> GetAllAbonnements();
         //Abonnement UpdateAbonnement(Abonnement abonnement, int id);
-        void DeleteAbonnement(int id);
+        Task DeleteAbonnement(int id);
     }
 }

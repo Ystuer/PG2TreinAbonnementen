@@ -13,25 +13,27 @@ namespace TA.Domain.Services
 {
     public class AbonnementService(IAbonnementRepository abonnementRepository, IKlantRepository klantRepository, IStationRepository stationRepository) : IAbonnementService
     {
-        public AbonnementResponseContract CreateAbonnement(AbonnementRequestContract abonnementRequestContract)
+        public async Task<AbonnementResponseContract> CreateAbonnement(AbonnementRequestContract abonnementRequestContract)
         {
-            var createdAbonnement = abonnementRepository.CreateAbonnement(abonnementRequestContract.AsModel().AsEntity());
+            var createdAbonnement = await abonnementRepository.CreateAbonnement(abonnementRequestContract.AsModel().AsEntity());
             return createdAbonnement.AsModel().AsContract(klantRepository, stationRepository);
         }
 
-        public void DeleteAbonnement(int id)
+        public async Task DeleteAbonnement(int id)
         {
-            abonnementRepository.DeleteAbonnement(id);
+            await abonnementRepository.DeleteAbonnement(id);
         }
 
-        public AbonnementResponseContract GetAbonnement(int id)
+        public async Task<AbonnementResponseContract> GetAbonnement(int id)
         {
-            return abonnementRepository.GetAbonnement(id).AsModel().AsContract(klantRepository, stationRepository);
+            var foundAbonnement = await abonnementRepository.GetAbonnement(id);
+            return foundAbonnement.AsModel().AsContract(klantRepository, stationRepository);
         }
 
-        public IEnumerable<AbonnementResponseContract> GetAllAbonnements()
+        public async Task<IEnumerable<AbonnementResponseContract>> GetAllAbonnements()
         {
-            return abonnementRepository.GetAllAbonnements().Select(abonnement => abonnement.AsModel().AsContract(klantRepository, stationRepository));
+            var foundAbonnements = await abonnementRepository.GetAllAbonnements();
+            return foundAbonnements.Select(abonnement => abonnement.AsModel().AsContract(klantRepository, stationRepository));
         }
 
         //public AbonnementResponseContract UpdateAbonnement(AbonnementRequestContract abonnementRequestContract, int id)

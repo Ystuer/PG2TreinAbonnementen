@@ -10,32 +10,34 @@ namespace TA.Domain.Services
 {
     public class KlantService(IKlantRepository klantRepository) : IKlantService
     {
-        public KlantResponseContract CreateKlant(KlantRequestContract klantRequestContract)
+        public async Task<KlantResponseContract> CreateKlant(KlantRequestContract klantRequestContract)
         {
             Klant newKlant = klantRequestContract.AsModel().AsEntity();
-            klantRepository.CreateKlant(newKlant);
+            await klantRepository.CreateKlant(newKlant);
             return newKlant.AsModel().AsContract();
         }
 
-        public void DeleteKlant(int id)
+        public async Task DeleteKlant(int id)
         {
-            klantRepository.DeleteKlant(id);
+            await klantRepository.DeleteKlant(id);
         }
 
-        public IEnumerable<KlantResponseContract> GetAllKlanten()
+        public async Task<IEnumerable<KlantResponseContract>> GetAllKlanten()
         {
-            return klantRepository.GetAllKlanten().Select(k => k.AsModel().AsContract());
+            var foundKlanten = await klantRepository.GetAllKlanten();
+            return foundKlanten.Select(k => k.AsModel().AsContract());
         }
 
-        public KlantResponseContract? GetKlant(int id)
+        public async Task<KlantResponseContract>? GetKlant(int id)
         {
-            return klantRepository.GetKlant(id).AsModel().AsContract();
+            var foundKlant = await klantRepository.GetKlant(id);
+            return foundKlant.AsModel().AsContract();
         }
 
-        public KlantResponseContract? UpdateKlant(KlantRequestContract klantRequestContract, int id)
+        public async Task<KlantResponseContract>? UpdateKlant(KlantRequestContract klantRequestContract, int id)
         {
             var updateKlant = klantRequestContract.AsModel().AsEntity();
-            klantRepository.UpdateKlant(updateKlant, id);
+            await klantRepository.UpdateKlant(updateKlant, id);
             return updateKlant.AsModel().AsContract();
         }
     }

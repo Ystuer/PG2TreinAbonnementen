@@ -12,38 +12,39 @@ namespace TA.Persistence
 {
     public class AbonnementRepository(TreinabonnementContext _dbContext) : IAbonnementRepository
     {
-        public Abonnement CreateAbonnement(Abonnement abonnement)
+        public async Task<Abonnement> CreateAbonnement(Abonnement abonnement)
         {
             _dbContext.Abonnements.Add(abonnement);
-            _dbContext.SaveChanges();
-            return GetAbonnement(abonnement.Id);
+            await _dbContext.SaveChangesAsync();
+            return await GetAbonnement(abonnement.Id);
         }
 
-        public void DeleteAbonnement(int id)
+        public async Task DeleteAbonnement(int id)
         {
-            var existingAbonnement = _dbContext.Abonnements.Find(id);
+            var existingAbonnement = await _dbContext.Abonnements.FindAsync(id);
             if (existingAbonnement is null) { throw new AbonnementNotFoundException(id); };
             _dbContext.Abonnements.Remove(existingAbonnement);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
         }
 
-        public Abonnement GetAbonnement(int id)
+        public async Task<Abonnement> GetAbonnement(int id)
         {
-            return _dbContext.Abonnements
+            return await _dbContext.Abonnements
                 .Include(a => a.Klant)
                 .Include(a => a.VertrekStation)
                 .Include(a => a.AankomstStation)
-                .SingleOrDefault(a => a.Id == id)
+                .SingleOrDefaultAsync(a => a.Id == id)
                 ?? throw new AbonnementNotFoundException(id);
         }
 
-        public IEnumerable<Abonnement> GetAllAbonnements()
+        public async Task<IEnumerable<Abonnement>> GetAllAbonnements()
         {
-            return _dbContext.Abonnements
+            return await _dbContext.Abonnements
                 .Include(a => a.Klant)
                 .Include(a => a.AankomstStation)
                 .Include(a => a.VertrekStation)
-                .OrderByDescending(a => a.Id);
+                .OrderByDescending(a => a.Id).
+                ToListAsync();
         }
 
         //public Abonnement UpdateAbonnement(Abonnement abonnement, int id)

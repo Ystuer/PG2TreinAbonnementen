@@ -10,10 +10,10 @@ namespace TA.Domain.Services.Interfaces
 {
     public interface IKlantService
     {
-        KlantResponseContract CreateKlant(KlantRequestContract klantRequestContract);
-        KlantResponseContract? GetKlant(int id);
-        IEnumerable<KlantResponseContract> GetAllKlanten();
-        KlantResponseContract? UpdateKlant(KlantRequestContract klantRequestContract, int id);
-        void DeleteKlant(int id);
+        Task<KlantResponseContract> CreateKlant(KlantRequestContract klantRequestContract);
+        Task<KlantResponseContract?> GetKlant(int id);
+        Task<IEnumerable<KlantResponseContract>> GetAllKlanten();
+        Task<KlantResponseContract?> UpdateKlant(KlantRequestContract klantRequestContract, int id);
+        Task DeleteKlant(int id);
     }
 }

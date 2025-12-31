@@ -12,32 +12,33 @@ namespace TA.Api.Controllers
     public class KlantController(IKlantService klantService) : Controller
     {
         [HttpPost]
-        public ActionResult<KlantResponseContract> CreateKlant([FromBody] KlantRequestContract klantRequestContract)
+        public async Task<ActionResult<KlantResponseContract>> CreateKlant([FromBody] KlantRequestContract klantRequestContract)
         {
-            var createdKlant = klantService.CreateKlant(klantRequestContract);
+            var createdKlant = await klantService.CreateKlant(klantRequestContract);
             return CreatedAtAction(nameof(GetKlant), new { createdKlant.Id }, createdKlant);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<KlantResponseContract> GetKlant([FromRoute] int id)
+        public async Task<ActionResult<KlantResponseContract>> GetKlant([FromRoute] int id)
         {
-            var foundKlant = klantService.GetKlant(id);
+            var foundKlant = await klantService.GetKlant(id);
             if(foundKlant is null) return NotFound();
             return Ok(foundKlant);
         }
 
         [HttpGet]
-        public IActionResult GetKlanten()
+        public async Task<IActionResult> GetKlanten()
         {
-            return Ok(klantService.GetAllKlanten());
+            var foundKlanten = await klantService.GetAllKlanten();
+            return Ok(foundKlanten);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteKlant([FromRoute] int id)
+        public async Task<IActionResult> DeleteKlant([FromRoute] int id)
         {
             try
             {
-                klantService.DeleteKlant(id);
+                await klantService.DeleteKlant(id);
             }
             catch(EntityNotFoundException enfe)
             {
@@ -51,9 +52,9 @@ namespace TA.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<KlantResponseContract> UpdateKlant([FromBody] KlantRequestContract klantRequestContract, [FromRoute] int id)
+        public async Task<ActionResult<KlantResponseContract>> UpdateKlant([FromBody] KlantRequestContract klantRequestContract, [FromRoute] int id)
         {
-            var updatedKlant = klantService.UpdateKlant(klantRequestContract, id);
+            var updatedKlant = await klantService.UpdateKlant(klantRequestContract, id);
             if (updatedKlant is null) return NotFound();
             return updatedKlant;
         }

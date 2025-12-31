@@ -15,31 +15,34 @@ namespace TA.Domain.Services
 {
     public class StationService(IStationRepository stationRepository) : IStationService
     {
-        public StationResponseContract CreateStation(StationRequestContract stationRequestContract)
+        public async Task<StationResponseContract> CreateStation(StationRequestContract stationRequestContract)
         {
             Station newStation = stationRequestContract.AsModel().AsEntity();
-            stationRepository.CreateStation(newStation);
+            await stationRepository.CreateStation(newStation);
             return newStation.AsModel().AsContract();
         }
 
-        public void DeleteStation(int id)
+        public async Task DeleteStation(int id)
         {
-            stationRepository.DeleteStation(id);
+            await stationRepository.DeleteStation(id);
         }
 
-        public IEnumerable<StationResponseContract> GetAllStations()
+        public async Task<IEnumerable<StationResponseContract>> GetAllStations()
         {
-            return stationRepository.GetAllStations().Select(s => s.AsModel().AsContract());
+            var foundStations = await stationRepository.GetAllStations();
+            return foundStations.Select(s => s.AsModel().AsContract());
         }
 
-        public StationResponseContract GetStation(int id)
+        public async Task<StationResponseContract> GetStation(int id)
         {
-            return stationRepository.GetStation(id).AsModel().AsContract();
+            var foundStation = await stationRepository.GetStation(id);
+            return foundStation.AsModel().AsContract();
         }
 
-        public StationResponseContract UpdateStation(StationRequestContract stationRequestContract, int id)
+        public async Task<StationResponseContract> UpdateStation(StationRequestContract stationRequestContract, int id)
         {
-            return stationRepository.UpdateStation(stationRequestContract.AsModel().AsEntity(), id).AsModel().AsContract();
+            var updatedStation = await stationRepository.UpdateStation(stationRequestContract.AsModel().AsEntity(), id);
+            return updatedStation.AsModel().AsContract();
         }
     }
 }

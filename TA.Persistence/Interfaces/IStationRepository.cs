@@ -9,10 +9,10 @@ namespace TA.Persistence.Interfaces
 {
     public interface IStationRepository
     {
-        Station CreateStation(Station station);
-        Station GetStation(int id);
-        IEnumerable<Station> GetAllStations();
-        Station UpdateStation(Station station, int id);
-        void DeleteStation(int id);
+        Task<Station> CreateStation(Station station);
+        Task<Station> GetStation(int id);
+        Task<IEnumerable<Station>> GetAllStations();
+        Task<Station> UpdateStation(Station station, int id);
+        Task DeleteStation(int id);
     }
 }

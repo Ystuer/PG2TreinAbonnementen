@@ -10,10 +10,10 @@ namespace TA.Domain.Services.Interfaces
 {
     public interface IStationService
     {
-        StationResponseContract CreateStation(StationRequestContract stationRequestContract);
-        StationResponseContract GetStation(int id);
-        IEnumerable<StationResponseContract> GetAllStations();
-        StationResponseContract UpdateStation(StationRequestContract stationRequestContract, int id);
-        void DeleteStation(int id);
+        Task<StationResponseContract> CreateStation(StationRequestContract stationRequestContract);
+        Task<StationResponseContract> GetStation(int id);
+        Task<IEnumerable<StationResponseContract>> GetAllStations();
+        Task<StationResponseContract> UpdateStation(StationRequestContract stationRequestContract, int id);
+        Task DeleteStation(int id);
     }
 }

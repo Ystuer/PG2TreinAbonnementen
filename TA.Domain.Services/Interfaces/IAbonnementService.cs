@@ -10,10 +10,10 @@ namespace TA.Domain.Services.Interfaces
 {
     public interface IAbonnementService
     {
-        AbonnementResponseContract CreateAbonnement(AbonnementRequestContract abonnementRequestContract);
-        AbonnementResponseContract GetAbonnement(int id);
-        IEnumerable<AbonnementResponseContract> GetAllAbonnements();
+        Task<AbonnementResponseContract> CreateAbonnement(AbonnementRequestContract abonnementRequestContract);
+        Task<AbonnementResponseContract> GetAbonnement(int id);
+        Task<IEnumerable<AbonnementResponseContract>> GetAllAbonnements();
         //AbonnementResponseContract UpdateAbonnement(AbonnementRequestContract abonnementRequestContract, int id);
-        void DeleteAbonnement(int id);
+        Task DeleteAbonnement(int id);
     }
 }

@@ -9,10 +9,10 @@ namespace TA.Persistence.Interfaces
 {
     public interface IKlantRepository
     {
-        Klant CreateKlant(Klant klant);
-        Klant GetKlant(int id);
-        IEnumerable<Klant> GetAllKlanten();
-        Klant UpdateKlant(Klant klant, int id);
-        void DeleteKlant(int id);
+        Task<Klant> CreateKlant(Klant klant);
+        Task<Klant> GetKlant(int id);
+        Task<IEnumerable<Klant>> GetAllKlanten();
+        Task<Klant> UpdateKlant(Klant klant, int id);
+        Task DeleteKlant(int id);
     }
 }
