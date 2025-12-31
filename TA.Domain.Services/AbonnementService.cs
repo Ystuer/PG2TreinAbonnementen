@@ -16,7 +16,7 @@ namespace TA.Domain.Services
         public async Task<AbonnementResponseContract> CreateAbonnement(AbonnementRequestContract abonnementRequestContract)
         {
             var createdAbonnement = await abonnementRepository.CreateAbonnement(abonnementRequestContract.AsModel().AsEntity());
-            return createdAbonnement.AsModel().AsContract(klantRepository, stationRepository);
+            return await createdAbonnement.AsModel().AsContract(klantRepository, stationRepository);
         }
 
         public async Task DeleteAbonnement(int id)
@@ -27,13 +27,14 @@ namespace TA.Domain.Services
         public async Task<AbonnementResponseContract> GetAbonnement(int id)
         {
             var foundAbonnement = await abonnementRepository.GetAbonnement(id);
-            return foundAbonnement.AsModel().AsContract(klantRepository, stationRepository);
+            return await foundAbonnement.AsModel().AsContract(klantRepository, stationRepository);
         }
 
         public async Task<IEnumerable<AbonnementResponseContract>> GetAllAbonnements()
         {
             var foundAbonnements = await abonnementRepository.GetAllAbonnements();
-            return foundAbonnements.Select(abonnement => abonnement.AsModel().AsContract(klantRepository, stationRepository));
+            var tasks = foundAbonnements.Select(async abonnement => await abonnement.AsModel().AsContract(klantRepository, stationRepository));
+            return await Task.WhenAll(tasks);
         }
 
         //public AbonnementResponseContract UpdateAbonnement(AbonnementRequestContract abonnementRequestContract, int id)

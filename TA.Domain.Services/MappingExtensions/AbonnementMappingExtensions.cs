@@ -54,14 +54,18 @@ namespace TA.Domain.Services.MappingExtensions
             };
         }
 
-        public static AbonnementResponseContract AsContract(this AbonnementModel abonnementModel, IKlantRepository klantRepository, IStationRepository stationRepository)
+        public static async Task<AbonnementResponseContract> AsContract(this AbonnementModel abonnementModel, IKlantRepository klantRepository, IStationRepository stationRepository)
         {
+            var klant = await klantRepository.GetKlant(abonnementModel.KlantId);
+            var vertrekStation = await stationRepository.GetStation(abonnementModel.VertrekStationId);
+            var aankomstStation = await stationRepository.GetStation(abonnementModel.AankomstStationId);
+
             return new AbonnementResponseContract
             {
                 Id = abonnementModel.Id,
-                Klant = klantRepository.GetKlant(abonnementModel.KlantId).Voornaam + " " + klantRepository.GetKlant(abonnementModel.KlantId).Naam,
-                VertrekStation = stationRepository.GetStation(abonnementModel.VertrekStationId).Naam,
-                AankomstStation = stationRepository.GetStation(abonnementModel.AankomstStationId).Naam,
+                Klant = klant.Voornaam + " " + klant.Naam,
+                VertrekStation = vertrekStation.Naam,
+                AankomstStation = aankomstStation.Naam,
                 Startdatum = abonnementModel.Startdatum,
                 Einddatum = abonnementModel.Einddatum,
                 Klasse = abonnementModel.Klasse,
