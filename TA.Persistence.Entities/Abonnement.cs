@@ -13,9 +13,9 @@ public partial class Abonnement
 
     public int AankomstStationId { get; set; }
 
-    public DateOnly Startdatum { get; set; }
+    public DateTime Startdatum { get; set; }
 
-    public DateOnly Einddatum { get; set; }
+    public DateTime Einddatum { get; set; }
 
     public string Klasse { get; set; } = null!;
 

@@ -32,7 +32,7 @@ namespace TA.Api.Controllers
             return Ok(await stationService.GetAllStations());
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStation(int id)
         {
             try

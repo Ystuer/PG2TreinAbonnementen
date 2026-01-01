@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Dapper;
+using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,56 +14,70 @@ namespace TA.Persistence
 {
     public class AbonnementRepository(TreinabonnementContext _dbContext) : IAbonnementRepository
     {
+        public readonly string ConnectionString = "server=127.0.0.1;port=3306;database=treinabonnement;user=tauser;password=tauser";
+
         public async Task<Abonnement> CreateAbonnement(Abonnement abonnement)
         {
-            _dbContext.Abonnements.Add(abonnement);
-            await _dbContext.SaveChangesAsync();
-            return await GetAbonnement(abonnement.Id);
+            const string query = @"Insert into treinabonnement.abonnement (klant_id, vertrek_station_id, aankomst_station_id, startdatum, einddatum, klasse) Values (@KlantId, @VertrekStationId, @AankomstStationId, @Startdatum, @Einddatum, @Klasse); Select LAST_INSERT_ID();";
+            var connection = new MySqlConnection(ConnectionString);
+            var id = await connection.ExecuteScalarAsync<int>(query, abonnement);
+            return await GetAbonnement(id) ?? throw new AbonnementNotFoundException(id);
         }
 
         public async Task DeleteAbonnement(int id)
         {
-            var existingAbonnement = await _dbContext.Abonnements.FindAsync(id);
-            if (existingAbonnement is null) { throw new AbonnementNotFoundException(id); };
-            _dbContext.Abonnements.Remove(existingAbonnement);
-            await _dbContext.SaveChangesAsync();
+            var exists = await GetAbonnement(id);
+
+            const string query = "Delete * from treinabonnement.abonnement Where id = @Id";
+            var connection = new MySqlConnection(ConnectionString);
+            await connection.ExecuteAsync(query);
         }
 
         public async Task<Abonnement> GetAbonnement(int id)
         {
-            return await _dbContext.Abonnements
-                .Include(a => a.Klant)
-                .Include(a => a.VertrekStation)
-                .Include(a => a.AankomstStation)
-                .SingleOrDefaultAsync(a => a.Id == id)
-                ?? throw new AbonnementNotFoundException(id);
+            var query = @"Select a.id, a.klant_id, a.vertrek_station_id, a.aankomst_station_id,  a.startdatum, a.einddatum, a.klasse, k.id, k.voornaam, k.naam, k.email, vs.id, vs.naam, vs.verwarmde_wachtruimte, as2.id, as2.naam, as2.verwarmde_wachtruimte
+                          From treinabonnement.abonnement a
+                            Inner join treinabonnement.klant k on k.id = a.klant_id
+                            Inner join treinabonnement.station vs on vs.id = a.vertrek_station_id
+                            Inner join treinabonnement.station as2 on as2.id = a.aankomst_station_id
+                                Where a.id = @Id";
+            var connection = new MySqlConnection(ConnectionString);
+            var result = await connection.QueryAsync<Abonnement, Klant, Station, Station, Abonnement>(
+                sql: query,
+                map: (abonnement, klant, vertrekStation, aankomstStation) =>
+                {
+                    abonnement.KlantId = klant.Id;
+                    abonnement.VertrekStationId = vertrekStation.Id;
+                    abonnement.AankomstStationId = aankomstStation.Id;
+                    return abonnement;
+                },
+                param: new { Id = id },
+                splitOn: "id,id,id"
+                );
+            return result.FirstOrDefault() ?? throw new AbonnementNotFoundException(id);
         }
 
         public async Task<IEnumerable<Abonnement>> GetAllAbonnements()
         {
-            return await _dbContext.Abonnements
-                .Include(a => a.Klant)
-                .Include(a => a.AankomstStation)
-                .Include(a => a.VertrekStation)
-                .OrderByDescending(a => a.Id).
-                ToListAsync();
+            var query = @"Select a.id, a.klant_id, a.vertrek_station_id, a.aankomst_station_id,  a.startdatum, a.einddatum, a.klasse, k.id, k.voornaam, k.naam, k.email, vs.id, vs.naam, vs.verwarmde_wachtruimte, as2.id, as2.naam, as2.verwarmde_wachtruimte
+                          From treinabonnement.abonnement a
+                            Inner join treinabonnement.klant k on k.id = a.klant_id
+                            Inner join treinabonnement.station vs on vs.id = a.vertrek_station_id
+                            Inner join treinabonnement.station as2 on as2.id = a.aankomst_station_id
+                                Order by a.id DESC";
+            var connection = new MySqlConnection(ConnectionString);
+            var result = await connection.QueryAsync<Abonnement, Klant, Station, Station, Abonnement>(
+                sql: query,
+                map: (abonnement, klant, vertrekStation, aankomstStation) =>
+                {
+                    abonnement.KlantId = klant.Id;
+                    abonnement.VertrekStationId = vertrekStation.Id;
+                    abonnement.AankomstStationId = aankomstStation.Id;
+                    return abonnement;
+                },
+                splitOn: "id,id,id"
+                );
+            return result;
         }
-
-        //public Abonnement UpdateAbonnement(Abonnement abonnement, int id)
-        //{
-        //    var existingAbonnement = _dbContext.Abonnements.Find(id);
-        //    if (existingAbonnement is null) { throw new AbonnementNotFoundException(id); };
-
-        //    existingAbonnement.KlantId = abonnement.KlantId;
-        //    existingAbonnement.AankomstStationId = abonnement.AankomstStationId;
-        //    existingAbonnement.VertrekStationId = abonnement.VertrekStationId;
-        //    existingAbonnement.Startdatum = abonnement.Startdatum;
-        //    existingAbonnement.Einddatum = abonnement.Einddatum;
-        //    existingAbonnement.Klasse = abonnement.Klasse;
-
-        //    _dbContext.SaveChanges();
-
-        //    return existingAbonnement;
-        //}
     }
 }
